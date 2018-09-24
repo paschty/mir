@@ -7,6 +7,8 @@
 
   <xed:form xmlns:xed="http://www.mycore.de/xeditor" xmlns:cmd="http://www.cdlib.org/inside/diglib/copyrightMD" method="post" role="form" class="form-horizontal">
     
+    <xed:preload uri="{$MIR.EditorForm.customEditorAdmins}" />
+    
     <xed:preload uri="webapp:editor/editor-includes.xed" />
     <xed:preload uri="xslStyle:editor/mir2xeditor:webapp:editor/editor-includes.xed" />
     
@@ -52,10 +54,12 @@
         <xed:include ref="abstract.repeated" />
         <xed:include ref="comment.complex" />
         <xed:include ref="related.item.search.of.all.items" />
+        <xed:template id="editor.admins.additional.fields" />
 
         <xed:include ref="cancel.submit" />
         <xed:include ref="cleanup-rules" />
         <xed:include ref="validation-rules" />
+        <xed:template id="editor.admins.additional.rules" />
 
         <xed:include ref="javascript" />
         <!-- frame for modal window -->
