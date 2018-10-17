@@ -166,7 +166,7 @@ public class LaadeImport {
             .collect(Collectors.toList());
         if (imageFiles.size() > 0) {
 
-            final MCRDerivate images = createDerivate(mycoreIDString, "images",
+            final MCRDerivate images = createDerivate(mycoreIDString, "cover",
                 contentPath.relativize(imageFiles.get(0)).toString());
             final MCRObjectID id = images.getId();
             imageFiles.forEach(imagePath -> {
@@ -185,7 +185,7 @@ public class LaadeImport {
         final List<Path> mp3Files = files.stream().filter(p -> p.toString().endsWith(".mp3"))
             .collect(Collectors.toList());
         if (mp3Files.size() > 0) {
-            final MCRDerivate images = createDerivate(mycoreIDString, "images",
+            final MCRDerivate images = createDerivate(mycoreIDString, "sound",
                 contentPath.relativize(mp3Files.get(0)).toString());
             final MCRObjectID id = images.getId();
             mp3Files.forEach(mp3Path -> {
