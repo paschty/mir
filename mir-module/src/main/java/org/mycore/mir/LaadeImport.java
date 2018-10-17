@@ -149,10 +149,10 @@ public class LaadeImport {
         String folder;
         if(parts[1].equals("CD")){
             format.setMinimumIntegerDigits(4);
-            folder= "CD_" + format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000 + 1);
+            folder= "CD_" + format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000);
         } else {
             format.setMinimumIntegerDigits(5);
-            folder= format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000 + 1);
+            folder= format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000);
         }
 
         final Path contentPath = onlineFolderPath.resolve(folder).resolve(mapSignature(signatur));
