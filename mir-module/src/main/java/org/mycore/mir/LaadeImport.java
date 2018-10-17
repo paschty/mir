@@ -145,17 +145,19 @@ public class LaadeImport {
         double base = Math.floor((double) fromNumber / 1000.0);
         NumberFormat format = NumberFormat.getIntegerInstance(Locale.ROOT);
         format.setGroupingUsed(false);
-        format.setMinimumIntegerDigits(5);
+
         String folder;
         if(parts[1].equals("CD")){
+            format.setMinimumIntegerDigits(4);
             folder= "CD_" + format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000 + 1);
         } else {
+            format.setMinimumIntegerDigits(5);
             folder= format.format(base * 1000 + 1) + "_" + format.format((base + 1) * 1000 + 1);
         }
 
         final Path contentPath = onlineFolderPath.resolve(folder).resolve(mapSignature(signatur));
 
-        LOGGER.info("Search folr files in {}", contentPath.toString());
+        LOGGER.info("Search for files in {}", contentPath.toString());
         final MCRFileCollectingFileVisitor<Path> collector = new MCRFileCollectingFileVisitor<Path>();
         Files.walkFileTree(contentPath, collector);
         final ArrayList<Path> files = collector.getPaths();
