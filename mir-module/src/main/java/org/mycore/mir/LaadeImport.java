@@ -142,7 +142,7 @@ public class LaadeImport {
         }
         int fromNumber = Integer.parseInt(parts[2].split("-")[0]);
 
-        double base = Math.floor((double) fromNumber / 1000.0);
+        double base = Math.floor((double) Math.abs(fromNumber-1) / 1000.0);
         NumberFormat format = NumberFormat.getIntegerInstance(Locale.ROOT);
         format.setGroupingUsed(false);
 

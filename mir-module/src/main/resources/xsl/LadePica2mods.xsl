@@ -822,7 +822,7 @@
           </xsl:for-each>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="'default'"/>
+          <xsl:value-of select="'ctb'"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
