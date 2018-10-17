@@ -10,8 +10,10 @@ import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -166,8 +168,10 @@ public class LaadeImport {
             .collect(Collectors.toList());
         if (imageFiles.size() > 0) {
 
+            Path firstImage = imageFiles.stream().min(Comparator.comparing(Objects::toString, String::compareTo)).get();
             final MCRDerivate images = createDerivate(mycoreIDString, "cover",
-                contentPath.relativize(imageFiles.get(0)).toString());
+                contentPath.relativize(
+                    firstImage).toString());
             final MCRObjectID id = images.getId();
             imageFiles.forEach(imagePath -> {
                 final Path fileName = contentPath.relativize(imagePath);
@@ -185,8 +189,8 @@ public class LaadeImport {
         final List<Path> mp3Files = files.stream().filter(p -> p.toString().endsWith(".mp3"))
             .collect(Collectors.toList());
         if (mp3Files.size() > 0) {
-            final MCRDerivate images = createDerivate(mycoreIDString, "sound",
-                contentPath.relativize(mp3Files.get(0)).toString());
+            Path firstMP3 = mp3Files.stream().min(Comparator.comparing(Objects::toString, String::compareTo)).get();
+            final MCRDerivate images = createDerivate(mycoreIDString, "sound", contentPath.relativize(firstMP3).toString());
             final MCRObjectID id = images.getId();
             mp3Files.forEach(mp3Path -> {
                 final Path fileName = contentPath.relativize(mp3Path);
