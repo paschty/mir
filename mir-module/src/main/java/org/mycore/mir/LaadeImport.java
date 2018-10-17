@@ -155,6 +155,7 @@ public class LaadeImport {
 
         final Path contentPath = onlineFolderPath.resolve(folder).resolve(mapSignature(signatur));
 
+        LOGGER.info("Search folr files in {}", contentPath.toString());
         final MCRFileCollectingFileVisitor<Path> collector = new MCRFileCollectingFileVisitor<Path>();
         Files.walkFileTree(contentPath, collector);
         final ArrayList<Path> files = collector.getPaths();
