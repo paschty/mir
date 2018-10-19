@@ -25,6 +25,8 @@ $navbar-inverse-link-hover-bg:              $brand-warning;
 // default
 $navbar-default-link-hover-color:           $brand-warning;
 
+$navbar-default-bg: $brand-success
+$btn-primary-color
 // Pagination
 // -------------------------
 /*
@@ -43,3 +45,7 @@ $navbar-default-link-hover-color:           $brand-warning;
 // Forms
 // -------------------------
 //$input-border-focus:                        $brand-primary;
+
+#powered_by {
+    background-color: darken($brand-success, 0.15)
+}

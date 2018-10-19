@@ -67,5 +67,12 @@ html {
     .mir-player {
       margin-bottom: 30px;
     }
+
+    #player_audio {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: black;
+    }
   }
 }

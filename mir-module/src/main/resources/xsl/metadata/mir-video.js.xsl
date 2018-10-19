@@ -19,6 +19,9 @@
       <div id="mir-player">
 
         <div class="panel panel-default">
+
+          <xsl:variable name="coverSolr" select="document(concat('solr:q=', encoder:encode(concat('+returnId:',mcrsolru:escapeSearchValue(mycoreobject/@ID)))))" />
+
         <!-- I want to make just one request, not for every derivate. So group by derivate id. -->
           <xsl:variable name="optionsFragment">
             <select id="videoChooser" class="form-control">
@@ -54,6 +57,14 @@
                   test="count($options//optgroup/option[@data-file-extension ='mp3']) &gt; 0 or count($options//optgroup/option[@data-file-extension ='wav']) &gt; 0">
                   <audio id="player_audio" class="video-js embed-responsive-item" controls="" preload="auto" poster="">
                     <xsl:attribute name="data-setup">{}</xsl:attribute>
+                    <!-- Laade changes -->
+                    <xsl:variable name="labelDoc" select="$coverSolr/.//doc[contains(str[@name='maindoc'], '.jpg') or contains(str[@name='maindoc'], '.png') or contains(str[@name='maindoc'], '.tif')][1]" />
+                    <xsl:variable name="maindoc" select="$labelDoc/str[@name='maindoc']" />
+                    <xsl:variable name="coverDerId" select="$labelDoc/str[@name='id']" />
+                    <xsl:attribute name="data-cover">
+                      <xsl:value-of select="concat($coverDerId, ':', $maindoc)" />
+                    </xsl:attribute>
+                    <!-- end Laade changes-->
                     <p class="vjs-no-js">
                       To listen to this audio file please enable JavaScript, and consider upgrading
                       to a web browser that

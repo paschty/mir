@@ -140,6 +140,18 @@
             playerToShow.show();
 
 
+            // laade changes
+            if (isAudio) {
+                var cover = $(".mir-player audio").attr("data-cover");
+                if (typeof cover !== "undefined" && cover != null && cover.trim().length > 0) {
+                    var derivate = cover.split(":", 2)[0];
+                    var image = cover.split(":", 2)[1];
+                    var imageURL = webApplicationBaseURL + "servlets/MCRTileCombineServlet/MID/" + derivate + "/" + image;
+                    $("#player_audio").css({"background-image": "url('" + imageURL + "')"});
+                }
+            }
+
+            // end laade changes
             playerToShow.src(sourceArr);
 
         });
