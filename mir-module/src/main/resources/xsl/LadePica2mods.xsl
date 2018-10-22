@@ -6,6 +6,8 @@
 
   <xsl:output method="xml" indent="yes"/>
 
+  <xsl:variable name="lb" select="'{'"/>
+  <xsl:variable name="rb" select="'}'"/>
 
   <xsl:template match="/">
     <xsl:apply-templates/>
@@ -148,670 +150,9 @@
             <xsl:variable name="role" select="lower-case(normalize-space(.))"/>
             <xsl:choose>
               <xsl:when test="string-length($role)=0"></xsl:when>
-              <!--
-              <xsl:when test="$role='sprechst.'">
-                <xsl:value-of select="."/>
+              <xsl:when test="$pica2MARC/code[mapping/@from=$role]">
+                <xsl:value-of select="$pica2MARC/code[mapping/@from=$role]/text()" />
               </xsl:when>
-              <xsl:when test="$role='collector'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musician'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentralist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komp.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bearb.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrsg.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ver.f'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='übers.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mitarb.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='interpr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='dir.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='singer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='producer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='red.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of accompanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ed.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='prod.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='text'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ill.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording enginner'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ltg.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='gefeierter'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vorr'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumantalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalmusikerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sängerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='speaker'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='associated name'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mitverf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='{verf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='üers.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='conductor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='widmungsempfänger'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='[verf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ver.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komponistin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalimusikerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalistin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='director'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='gsg.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='performer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musikalischer leiterin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='textverf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='researcher'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vef.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vorr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='photogr'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalmusikerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='dirigentin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='photogr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='produzentin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrsg.?'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='record. engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mtarb'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vocalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalmusiker'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komponist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='interpret'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='intepr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komp.?'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='compiler'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='creator'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf:'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='muscian'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sänger'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='gsg'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf:'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording rengineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='nachr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='berab.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komp'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='produzent'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='indtrumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='arr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musician]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musician]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='[producer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='poducer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentelist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprechsst.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ltg'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='asscociated name'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='prodcuer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mitwirkender'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of acompanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of accompanying material.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verf..'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='pseud.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='diskogr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='transcriber'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprechtst.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='fotogr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verfasserin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrrsg.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentlist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ill'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='insrumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='illustratorin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recordind engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='schauspielerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bearb'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='rednerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='interp.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentaliste'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='ld'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bearb.]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of acccompanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mtarb.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='il.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recordin engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musik'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of accompaying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording enginneer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sammler'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='leitung'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='rezitator'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrsg'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='herausgeberin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='gastgeberin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='erzähler'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verfasser'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording enginer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprechst.]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bass'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='verr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musican'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='dirignetin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='dirigent'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='interpr.]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='transl.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='lll.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrummentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprecher'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='gef. person'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumenalmusikerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='zusammenstellender'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='dir'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='isntrumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalmusikern'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='intperpr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of accomanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording engineers'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='singer. übers.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprechstimme'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='produced'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writerof accompanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='harmonica'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='regisseur'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalmusikter'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrsg..'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='zensor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='assistant'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='direcor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='übers.-'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sonstige person'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='familie und körperschaft'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='regie'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='srechst.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bearb. dir.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='notes'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vrf.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='übesr.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='nachw.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mitarb'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recroding engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='wirkl. name'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='arrangeurin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='regisseurin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='illl'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrg.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='übbrs.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='producing engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='über.s'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='samm.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vorr.]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='übers'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='bers.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instruementalmusikerin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='moderatorin'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='komponit'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='reasearcher'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='intper.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recorded engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='hrsg. producer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentalist]'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprecht.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='interpr'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer off accompanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='accociated name'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='muiscian'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='produktion'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='muisician'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recording eingineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='intrumentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='insturmentalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumentlaist'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of accomapanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumental'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='recordimg engineer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='redactor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='vioarǎ'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='maestru de sunet'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='redactor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='asociated name'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='mutmaßl. komp.'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='autor'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='writer of acommpanying material'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='sprechst..'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musisican'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='musiciann'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='choreographer'">
-                <xsl:value-of select="."/>
-              </xsl:when>
-              <xsl:when test="$role='instrumenalist'">
-                <xsl:value-of select="."/>
-              </xsl:when>-->
               <xsl:otherwise>
                 <xsl:message>Unknown person type found:
                   <xsl:value-of select="$role"/>
@@ -884,6 +225,266 @@
       </mods:shelfLocator>
     </mods:location>
   </xsl:template>
+
+  <xsl:variable name="pica2MARC">
+    <code name="asn">
+      <mapping from="accociated name"/>
+      <mapping from="asociated name"/>
+      <mapping from="associated name"/>
+      <mapping from="asscociated name"/>
+    </code>
+    <code name="arr">
+      <mapping from="arr."/>
+      <mapping from="arrangeurin"/>
+    </code>
+    <code name="aut">
+      <mapping from="autor"/>
+      <mapping from="vef."/>
+      <mapping from="ver.f"/>
+      <mapping from="ver."/>
+      <mapping from="verf"/>
+      <mapping from="verf."/>
+      <mapping from="{$lb}verf."/>
+      <mapping from="verf.."/>
+      <mapping from="verfasserin"/>
+      <mapping from="verfasser"/>
+      <mapping from="[verf."/>
+      <mapping from="verf:"/>
+      <mapping from="vrf."/>
+      <mapping from="mitverf."/>
+    </code>
+    <code name="edt">
+      <mapping from="ed."/>
+      <mapping from="herausgeberin"/>
+      <mapping from="hrg."/>
+      <mapping from="hrrsg."/>
+      <mapping from="hrsg."/>
+      <mapping from="hrsg.?"/>
+      <mapping from="hrsg"/>
+      <mapping from="hrsg.."/>
+      <mapping from="red."/>
+      <mapping from="redactor"/>
+      <mapping from="bearb."/>
+      <mapping from="bearb"/>
+      <mapping from="bearb.]"/>
+      <mapping from="berab."/>
+    </code>
+    <code name="chr">
+      <mapping from="choreographer"/>
+    </code>
+    <code name="col">
+      <mapping from="collector"/>
+      <mapping from="samm."/>
+      <mapping from="sammler"/>
+    </code>
+    <code name="com">
+      <mapping from="compiler"/>
+      <mapping from="zusammenstellender"/>
+    </code>
+    <code name="cnd">
+      <mapping from="conductor"/>
+      <mapping from="dirigentin"/>
+      <mapping from="dirignetin"/>
+      <mapping from="dirigent"/>
+      <mapping from="leitung"/>
+      <mapping from="ltg"/>
+      <mapping from="ltg."/>
+      <mapping from="musikalischer leiterin"/>
+    </code>
+    <code name="cre">
+      <mapping from="creator"/>
+    </code>
+    <code name="edc">
+      <mapping from="bearb. dir."/>
+    </code>
+    <code name="drt">
+      <mapping from="direcor"/>
+      <mapping from="director"/>
+      <mapping from="regisseur"/>
+      <mapping from="regisseurin"/>
+      <mapping from="regie"/>
+      <mapping from="dir." />
+    </code>
+    <code name="rce">
+      <mapping from="engineer"/>
+      <mapping from="recording engineer"/>
+      <mapping from="recording enginner"/>
+      <mapping from="record. engineer"/>
+      <mapping from="recording rengineer"/>
+      <mapping from="recordind engineer"/>
+      <mapping from="recordin engineer"/>
+      <mapping from="recording enginneer"/>
+      <mapping from="recording enginer"/>
+      <mapping from="recording engineers"/>
+      <mapping from="recorded engineer"/>
+      <mapping from="recording eingineer"/>
+      <mapping from="recordimg engineer"/>
+      <mapping from="recroding engineer"/>
+      <mapping from="maestru de sunet"/>
+    </code>
+    <code name="mus">
+      <mapping from="muiscian"/>
+      <mapping from="muisician"/>
+      <mapping from="muscian"/>
+      <mapping from="musican"/>
+      <mapping from="musician"/>
+      <mapping from="musician]"/>
+      <mapping from="musiciann"/>
+      <mapping from="musisican"/>
+    </code>
+    <code name="pht">
+      <mapping from="photogr"/>
+      <mapping from="photogr."/>
+      <mapping from="fotogr."/>
+    </code>
+    <code name="pro">
+      <mapping from="poducer"/>
+      <mapping from="prod."/>
+      <mapping from="prodcuer"/>
+      <mapping from="produced"/>
+      <mapping from="producer"/>
+      <mapping from="producing engineer"/>
+      <mapping from="produktion"/>
+      <mapping from="produzentin"/>
+      <mapping from="hrsg. producer"/>
+      <mapping from="[producer"/>
+      <mapping from="produzent"/>
+    </code>
+    <code name="trl">
+      <mapping from="transl."/>
+      <mapping from="übbrs."/>
+      <mapping from="über.s"/>
+      <mapping from="übers."/>
+      <mapping from="übers.-"/>
+      <mapping from="üers."/>
+      <mapping from="bers."/>
+      <mapping from="übers"/>
+      <mapping from="übesr."/>
+    </code>
+    <code name="sng">
+      <mapping from="vocalist"/>
+      <mapping from="interpret"/>
+      <mapping from="intepr."/>
+      <mapping from="interp."/>
+      <mapping from="interpr"/>
+      <mapping from="interpr."/>
+      <mapping from="interpr.]"/>
+      <mapping from="intper."/>
+      <mapping from="intperpr."/>
+      <mapping from="sängerin"/>
+      <mapping from="sänger"/>
+      <mapping from="singer. übers."/>
+      <mapping from="singer"/>
+    </code>
+    <code name="cmp">
+      <mapping from="komp"/>
+      <mapping from="komp."/>
+      <mapping from="komponistin"/>
+      <mapping from="komponist"/>
+      <mapping from="komponit"/>
+      <mapping from="mutmaßl. komp."/>
+      <mapping from="komp.?"/>
+    </code>
+    <code name="hst">
+      <mapping from="gastgeberin"/>
+    </code>
+    <code name="dte">
+      <mapping from="gef. person"/>
+      <mapping from="gefeierter"/>
+      <mapping from="widmungsempfänger"/>
+    </code>
+    <code name="wam">
+      <mapping from="writer of acccompanying material"/>
+      <mapping from="writer of accomanying material"/>
+      <mapping from="writer of accomapanying material"/>
+      <mapping from="writer of accompanying material"/>
+      <mapping from="writer of accompanying material."/>
+      <mapping from="writer of accompaying material"/>
+      <mapping from="writer of acommpanying material"/>
+      <mapping from="writer of acompanying material"/>
+      <mapping from="writer off accompanying material"/>
+      <mapping from="writerof accompanying material"/>
+    </code>
+    <code name="cmm">
+      <mapping from="vorr"/>
+      <mapping from="vorr."/>
+      <mapping from="vorr.]"/>
+    </code>
+    <code name="cns">
+      <mapping from="zensor"/>
+    </code>
+    <code name="itr">
+      <mapping from="indtrumentalist"/>
+      <mapping from="insrumentalist"/>
+      <mapping from="instr."/>
+      <mapping from="instruementalmusikerin"/>
+      <mapping from="instrumantalist"/>
+      <mapping from="instrumenalist"/>
+      <mapping from="instrumenalmusikerin"/>
+      <mapping from="instrumentalist"/>
+      <mapping from="instrumentalimusikerin"/>
+      <mapping from="instrumentaliste"/>
+      <mapping from="instrumentalist]"/>
+      <mapping from="instrumentalistin"/>
+      <mapping from="instrumentalmusikerin"/>
+      <mapping from="instrumentalmusiker"/>
+      <mapping from="instrumentalmusikern"/>
+      <mapping from="isntrumentalist"/>
+      <mapping from="instrumentralist"/>
+      <mapping from="instrumentalmusikter"/>
+      <mapping from="intrumentalist"/>
+      <mapping from="insturmentalist"/>
+      <mapping from="instrumentlaist"/>
+      <mapping from="instrumental"/>
+      <mapping from="instrummentalist"/>
+      <mapping from="instrumentelist"/>
+      <mapping from="instumentalist"/>
+      <mapping from="instrumentlist"/>
+      <mapping from="vioarǎ"/>
+      <mapping from="harmonica"/>
+      <mapping from="bass"/>
+      <mapping from="musik"/>
+    </code>
+    <code name="vac">
+      <mapping from="speaker"/>
+      <mapping from="sprecher"/>
+      <mapping from="sprechsst."/>
+      <mapping from="sprechst."/>
+      <mapping from="sprechst.."/>
+      <mapping from="sprechst.]"/>
+      <mapping from="sprechstimme"/>
+      <mapping from="sprecht."/>
+      <mapping from="sprechtst."/>
+      <mapping from="srechst."/>
+      <mapping from="rednerin"/>
+      <mapping from="rezitator"/>
+    </code>
+    <code name="trc">
+      <mapping from="transcriber"/>
+    </code>
+    <code name="res">
+      <mapping from="reasearcher"/>
+      <mapping from="researcher"/>
+    </code>
+    <code name="mod">
+      <mapping from="moderatorin"/>
+    </code>
+    <code name="ill">
+      <mapping from="illl"/>
+      <mapping from="ill."/>
+      <mapping from="ill"/>
+      <mapping from="illustratorin"/>
+      <mapping from="il."/>
+      <mapping from="lll."/>
+    </code>
+    <code name="nrt">
+      <mapping from="erzähler"/>
+    </code>
+    <code name="act">
+      <mapping from="schauspielerin"/>
+      <mapping from="performer"/>
+    </code>
+  </xsl:variable>
 
 
 </xsl:stylesheet>
