@@ -151,7 +151,7 @@
             <xsl:choose>
               <xsl:when test="string-length($role)=0"></xsl:when>
               <xsl:when test="$pica2MARC/code[mapping/@from=$role]">
-                <xsl:value-of select="$pica2MARC/code[mapping/@from=$role]/text()" />
+                <xsl:value-of select="$pica2MARC/code[mapping/@from=$role]/@name" />
               </xsl:when>
               <xsl:otherwise>
                 <xsl:message>Unknown person type found:
