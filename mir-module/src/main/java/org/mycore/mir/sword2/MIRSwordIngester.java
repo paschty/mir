@@ -1,10 +1,19 @@
 package org.mycore.mir.sword2;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.naming.OperationNotSupportedException;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +24,12 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.xpath.XPathFactory;
 import org.mycore.access.MCRAccessException;
+import org.mycore.common.MCRConstants;
+import org.mycore.common.MCRException;
 import org.mycore.common.MCRPersistenceException;
 import org.mycore.common.config.MCRConfiguration;
 import org.mycore.common.content.MCRContent;
@@ -40,25 +54,79 @@ import org.xml.sax.SAXException;
 
 public class MIRSwordIngester implements MCRSwordIngester {
 
+    public static final Logger LOGGER = LogManager.getLogger();
+
     private static final Namespace DC_NAMESPACE = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
 
     private static final MCRXSL2XMLTransformer XSL_DC_MODS_TRANSFORMER = new MCRXSL2XMLTransformer(
         "xsl/DC_MODS3-5_XSLT1-0.xsl");
 
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Namespace EPDCX_NAMESPACE = Namespace
+        .getNamespace("epdcx", "http://purl.org/eprint/epdcx/2006-11-16/");
 
     private MCRSwordLifecycleConfiguration lifecycleConfiguration;
 
     private MCRSwordMediaHandler mcrSwordMediaHandler = new MCRSwordMediaHandler();
 
+    /**
+     * Sets a main file if not present.
+     * @param derivateID the id of the derivate
+     */
+    private static void setDefaultMainFile(String derivateID) {
+        MCRPath path = MCRPath.getPath(derivateID, "/");
+        try {
+            MCRFileCollectingFileVisitor<Path> visitor = new MCRFileCollectingFileVisitor<>();
+            Files.walkFileTree(path, visitor);
+            MCRDerivate derivate = MCRMetadataManager.retrieveMCRDerivate(MCRObjectID.getInstance(derivateID));
+            visitor.getPaths().stream()
+                .map(MCRPath.class::cast)
+                .filter(p -> !p.getOwnerRelativePath().endsWith(".xml"))
+                .findFirst()
+                .ifPresent(file -> {
+                    derivate.getDerivate().getInternals().setMainDoc(file.getOwnerRelativePath());
+                    try {
+                        MCRMetadataManager.update(derivate);
+                    } catch (MCRPersistenceException | MCRAccessException e) {
+                        LOGGER.error("Could not set main file!", e);
+                    }
+                });
+        } catch (IOException e) {
+            LOGGER.error("Could not set main file!", e);
+        }
+    }
+
     @Override
     public MCRObjectID ingestMetadata(Deposit entry) throws SwordError, SwordServerException {
         final MCRObjectID newObjectId = MCRObjectID
             .getNextFreeId(MCRConfiguration.instance().getString("MIR.projectid.default") + "_mods");
-        final Map<String, List<String>> dublinCoreMetadata = entry.getSwordEntry().getDublinCore();
+        Document convertedDocument;
 
-        Document dcDocument = buildDCDocument(dublinCoreMetadata);
-        Document convertedDocument = convertDCToMods(dcDocument);
+        if (entry.getSwordEntry() != null) {
+            final Map<String, List<String>> dublinCoreMetadata = entry.getSwordEntry().getDublinCore();
+            Document dcDocument = buildDCDocument(dublinCoreMetadata);
+            convertedDocument = convertDCToMods(dcDocument);
+        } else {
+            Path tempFile = null;
+
+            try {
+                tempFile = MCRSwordUtil
+                    .createTempFileFromStream(entry.getFilename(), entry.getInputStream(), entry.getMd5());
+
+                try (FileSystem zipfs = FileSystems
+                    .newFileSystem(new URI("jar:" + tempFile.toUri()), Collections.emptyMap())) {
+
+                    Path metsPath = zipfs.getPath("/mets.xml");
+                    if (!Files.exists(metsPath)) {
+                        throw new IOException("Error mets.xml does not exist!");
+                    }
+                    HashMap<String, List<String>> dcMetadata = extractDCFromMets(metsPath);
+                    Document document = buildDCDocument(dcMetadata);
+                    convertedDocument = convertDCToMods(document);
+                }
+            } catch (IOException | URISyntaxException e) {
+                throw new MCRException("Error while unpacking ZIP!", e);
+            }
+        }
 
         final MCRObject mcrObject = MCRMODSWrapper.wrapMODSDocument(convertedDocument.detachRootElement(),
             newObjectId.getProjectId());
@@ -66,10 +134,34 @@ public class MIRSwordIngester implements MCRSwordIngester {
         try {
             MCRMetadataManager.create(mcrObject);
         } catch (MCRAccessException e) {
-            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED,
+                e.getMessage());
         }
 
         return newObjectId;
+    }
+
+    private static HashMap<String, List<String>> extractDCFromMets(Path metsPath) throws IOException {
+        HashMap<String, List<String>> dcMetadata = new HashMap<>();
+        try (InputStream metsIS = Files.newInputStream(metsPath)) {
+            Document metsFileDocument = new SAXBuilder().build(metsIS);
+            String PURL_DC_URL = "http://purl.org/dc/elements/1.1/";
+            String metadataStatementXPString = "mets:mets/mets:dmdSec/mets:mdWrap/mets:xmlData//"
+                + "epdcx:statement[contains(@epdcx:propertyURI, '" + PURL_DC_URL + "') and epdcx:valueString]";
+            List<Element> metadataElementStatements = XPathFactory.instance()
+                .compile(metadataStatementXPString, Filters.element(), null, MCRConstants.METS_NAMESPACE,
+                    EPDCX_NAMESPACE).evaluate(metsFileDocument);
+            for (Element statement : metadataElementStatements) {
+                String propertyURI = statement.getAttributeValue("propertyURI", EPDCX_NAMESPACE);
+                String dcElementName = propertyURI.substring(PURL_DC_URL.length());
+                Element valueStringElement = statement.getChild("valueString", EPDCX_NAMESPACE);
+                String dcValue = valueStringElement.getTextTrim();
+                dcMetadata.put(dcElementName, Stream.of(dcValue).collect(Collectors.toList()));
+            }
+        } catch (JDOMException e) {
+            throw new MCRException("Error while parsing mets.xml", e);
+        }
+        return dcMetadata;
     }
 
     private Document convertDCToMods(Document dcDocument) throws SwordError, SwordServerException {
@@ -123,9 +215,11 @@ public class MIRSwordIngester implements MCRSwordIngester {
             mcrSwordMediaHandler.addResource(createdDerivateID.toString(), "/", entry);
             complete = true;
         } catch (IOException e) {
-            throw new SwordServerException("Error while creating new derivate for object " + objectID.toString(), e);
+            throw new SwordServerException("Error while creating new derivate for object " + objectID.toString(),
+                e);
         } catch (MCRAccessException e) {
-            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED,
+                e.getMessage());
         } finally {
             if (createdDerivateID != null && !complete) {
                 try {
@@ -134,7 +228,7 @@ public class MIRSwordIngester implements MCRSwordIngester {
                     // derivate can be created but not deleted ?!
                     LOGGER.error("Derivate could not be deleted(deposit was invalid)", e1);
                 }
-            } else if(complete) {
+            } else if (complete) {
                 setDefaultMainFile(createdDerivateID.toString());
             }
         }
@@ -152,7 +246,8 @@ public class MIRSwordIngester implements MCRSwordIngester {
         try {
             MCRMetadataManager.update(object);
         } catch (MCRAccessException e) {
-            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+            throw new SwordError(UriRegistry.ERROR_BAD_REQUEST, HttpServletResponse.SC_UNAUTHORIZED,
+                e.getMessage());
         }
     }
 
@@ -169,32 +264,5 @@ public class MIRSwordIngester implements MCRSwordIngester {
     @Override
     public void destroy() {
 
-    }
-
-    /**
-     * Sets a main file if not present.
-     * @param derivateID the id of the derivate
-     */
-    private static void setDefaultMainFile(String derivateID) {
-        MCRPath path = MCRPath.getPath(derivateID, "/");
-        try {
-            MCRFileCollectingFileVisitor<Path> visitor = new MCRFileCollectingFileVisitor<>();
-            Files.walkFileTree(path, visitor);
-            MCRDerivate derivate = MCRMetadataManager.retrieveMCRDerivate(MCRObjectID.getInstance(derivateID));
-            visitor.getPaths().stream()
-                .map(MCRPath.class::cast)
-                .filter(p -> !p.getOwnerRelativePath().endsWith(".xml"))
-                .findFirst()
-                .ifPresent(file -> {
-                    derivate.getDerivate().getInternals().setMainDoc(file.getOwnerRelativePath());
-                    try {
-                        MCRMetadataManager.update(derivate);
-                    } catch (MCRPersistenceException | MCRAccessException e) {
-                        LOGGER.error("Could not set main file!", e);
-                    }
-                });
-        } catch (IOException e) {
-            LOGGER.error("Could not set main file!", e);
-        }
     }
 }
